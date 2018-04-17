@@ -1,0 +1,15 @@
+{
+  "name": "webpack-name-moduleid-plugin",
+  "version": "1.0.0",
+  "description": "Fix module name to module path",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webpack",
+    "plugin"
+  ],
+  "author": "pwwpche",
+  "license": "MIT"
+}

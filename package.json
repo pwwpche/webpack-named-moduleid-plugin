@@ -1,7 +1,7 @@
 {
   "name": "webpack-name-moduleid-plugin",
-  "version": "1.0.0",
-  "description": "Fix module name to module path",
+  "version": "0.0.2",
+  "description": "Assign module name with module path and resource name.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,5 +11,13 @@
     "plugin"
   ],
   "author": "pwwpche",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pwwpche/webpack-named-moduleid-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pwwpche/webpack-named-moduleid-plugin/issues"
+  },
+  "homepage": "https://github.com/pwwpche/webpack-named-moduleid-plugin#readme"
 }

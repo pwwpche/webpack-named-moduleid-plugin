@@ -1,15 +1,11 @@
 function WebpackNameModuleId(options) {
-    this.options = options || {};
+    this._options = options || {prefix: ''};
 }
 
-WebpackNameModuleId.prototype.constructor = function(options) {
-    this.prefix = options.prefix ? '' : options.prefix;
-};
-
 WebpackNameModuleId.prototype.apply = function(compiler) {
+    modulePrefix = this._options.prefix;
     compiler.plugin("compilation", function(compilation) {
         compilation.plugin("after-optimize-module-ids", function(modules) {
-            console.log(this);
             modules.forEach(function(module) {
                 var resourceName = module.resource;
                 if (resourceName) {
@@ -21,7 +17,7 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                     } else if (resourceName.indexOf('app/') !== -1) {
                         module.id = resourceName.substr(resourceName.lastIndexOf('app/') + 'app/'.length);
                     }
-                    module.id = this.prefix + module.id;
+                    module.id = modulePrefix + module.id;
                 }
             });
         });
@@ -29,4 +25,3 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
 };
 
 module.exports = WebpackNameModuleId;
-

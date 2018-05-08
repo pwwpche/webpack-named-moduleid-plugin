@@ -1,5 +1,3 @@
-"use strict";
-
 function WebpackNameModuleId(options) {
     this.options = options || {};
 }
@@ -11,6 +9,7 @@ WebpackNameModuleId.prototype.constructor = function(options) {
 WebpackNameModuleId.prototype.apply = function(compiler) {
     compiler.plugin("compilation", function(compilation) {
         compilation.plugin("after-optimize-module-ids", function(modules) {
+            console.log(this);
             modules.forEach(function(module) {
                 var resourceName = module.resource;
                 if (resourceName) {

@@ -17,7 +17,9 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                     } else if (resourceName.indexOf('app/') !== -1) {
                         module.id = resourceName.substr(resourceName.lastIndexOf('app/') + 'app/'.length);
                     }
-                    module.id = modulePrefix + module.id;
+                }
+                if (!module.id.startsWith(modulePrefix)) {
+                    module.id = modulePrefix + module.id;    
                 }
             });
         });

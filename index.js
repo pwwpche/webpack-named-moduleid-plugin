@@ -18,7 +18,7 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                         module.id = resourceName.substr(resourceName.lastIndexOf('app/') + 'app/'.length);
                     }
                 }
-                if (!module.id.startsWith(modulePrefix)) {
+                if (!module.id.toString().startsWith(modulePrefix)) {
                     module.id = modulePrefix + module.id;    
                 }
             });

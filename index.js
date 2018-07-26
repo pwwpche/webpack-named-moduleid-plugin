@@ -1,5 +1,18 @@
+var crypto = require('crypto');
+var fs = require('fs');
+
+function checksum (str) {
+    return crypto
+        .createHash('md5')
+        .update(str, 'utf8')
+        .digest('hex')
+}
+
+
 function WebpackNameModuleId(options) {
-    this._options = options || {prefix: ''};
+    this._options = options || {
+        prefix: '',
+    };
 }
 
 WebpackNameModuleId.prototype.apply = function(compiler) {
@@ -11,15 +24,21 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                 if (resourceName) {
                     if (resourceName.indexOf('node_modules/') !== -1) {
                         module.id = resourceName.substr(resourceName.lastIndexOf('node_modules/') + 'node_modules/'.length);
-                        return;
-                    } else if (resourceName.indexOf('src/') !== -1) {
+                        var checkSumStr = '';
+                        try{
+                            const file = fs.readFileSync(resourceName);
+                            checkSumStr = checksum(file);
+                        } catch (e) {}
+                        module.id += '_' + checkSumStr;
+                        return ;
+                    } else if ( resourceName.indexOf('src/') !== -1) {
                         module.id = resourceName.substr(resourceName.lastIndexOf('src/') + 'src/'.length);
                     } else if (resourceName.indexOf('app/') !== -1) {
                         module.id = resourceName.substr(resourceName.lastIndexOf('app/') + 'app/'.length);
                     }
                 }
                 if (!module.id.toString().startsWith(modulePrefix)) {
-                    module.id = modulePrefix + module.id;    
+                    module.id = modulePrefix + module.id;
                 }
             });
         });

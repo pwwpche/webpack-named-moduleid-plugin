@@ -42,6 +42,14 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                 }
             });
         });
+
+        compilation.plugin("after-optimize-chunk-ids", function(chunks) {
+            chunks.forEach(chunk => {
+                if (chunk.ids) {
+                    chunk.ids = chunk.ids.map(id => modulePrefix + id);
+                }
+            })
+        });
     });
 };
 

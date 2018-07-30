@@ -15,6 +15,19 @@ function WebpackNameModuleId(options) {
     };
 }
 
+var packageDependencies = require('../../package-lock.json').dependencies;
+function getVersionOfPackage(resourcePath) {
+    var pathArr = resourcePath.split('/');
+    var version = '', currentPackageName = '';
+    for( var packageName of pathArr) {
+        currentPackageName += (currentPackageName ? '/' : '') + packageName;
+        if (packageDependencies.hasOwnProperty(currentPackageName)) {
+            version = packageDependencies[currentPackageName].version;
+        }
+    }
+    return version;
+}
+
 WebpackNameModuleId.prototype.apply = function(compiler) {
     modulePrefix = this._options.prefix;
     compiler.plugin("compilation", function(compilation) {
@@ -29,7 +42,7 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                             const file = fs.readFileSync(resourceName);
                             checkSumStr = checksum(file);
                         } catch (e) {}
-                        module.id += '_' + checkSumStr;
+                        module.id += '_' + getVersionOfPackage(module.id) + '_' + checkSumStr;
                         return ;
                     } else if ( resourceName.indexOf('src/') !== -1) {
                         module.id = resourceName.substr(resourceName.lastIndexOf('src/') + 'src/'.length);
@@ -41,14 +54,6 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                     module.id = modulePrefix + module.id;
                 }
             });
-        });
-
-        compilation.plugin("after-optimize-chunk-ids", function(chunks) {
-            chunks.forEach(chunk => {
-                if (chunk.ids) {
-                    chunk.ids = chunk.ids.map(id => modulePrefix + id);
-                }
-            })
         });
     });
 };

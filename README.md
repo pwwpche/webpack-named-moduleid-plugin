@@ -5,7 +5,7 @@ Webpack is assigning module name with a random int number. Every time webpack co
 This plugin fix the module name into its resource path and the app name.
 
 ## Usage:
-```
+```js
 const WebpackNameModuleIdPlugin = require('webpack-name-moduleId-plugin');
 
 /* ... */
@@ -26,14 +26,14 @@ plugins: [
 This plugin uses Webpack `after-optimize-chunk-id` lifecycle hook, and looks into every module in each generated chunk.
 For each module, it changes the module id to make it fixed and more meaningful.
 After bundling completes, in the build bundles, you will notice module id changed to:
-```
+```js
 /***/ "PROXIES/314": function() ...
 /***/ "PROXIES/@angular/animations/@angular/animations.es5.js_4.3.4_b4ce8ea53a8f2acf5589246494e80181": function() ...
 /***/ "PROXIES/shell/appwrapper.module.ts": function() ...
 ```
 
 Modules in bundles now have a module id with following format, where
-```
+```js
 module.id = 'PREFIX' + 'resource_name' + '_' + 'module_version' + '_' + 'resource_hash'
 ```
 * __PREFIX__: Prefix defined in plugin options, default empty. Eg. `PROXIES/`

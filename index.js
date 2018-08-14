@@ -10,10 +10,7 @@ function checksum (str) {
 
 
 function WebpackNameModuleId(options) {
-    this._options = options || {
-        prefix: '',
-        'skip-prefix-for-vendors': true,
-    };
+    this._options = options;
 }
 
 var packageDependencies = require('../../package-lock.json').dependencies;
@@ -29,7 +26,7 @@ function getVersionOfPackage(resourcePath) {
     return version;
 }
 
-function replaceModuleId(module, modulePrefix, moduleVendors) {
+function replaceModuleId(module, modulePrefix) {
     var resourceName = module.resource;
     var replacedId = module.id;
 
@@ -57,15 +54,16 @@ function replaceModuleId(module, modulePrefix, moduleVendors) {
 }
 
 WebpackNameModuleId.prototype.apply = function(compiler) {
-    var modulePrefix = this._options.prefix;
-    var moduleVendors = this._options.vendor;
-    var skipPrefixForVendors = this._options['skip-prefix-for-vendors']
+    var modulePrefix = this._options.prefix || '';
+    var skipPrefixForVendors = this._options['skip-prefix-for-vendors'] || true;
     compiler.plugin("compilation", function(compilation) {
         compilation.plugin("after-optimize-chunk-ids", function(chunks) {
+
             chunks.forEach(function(chunk) {
                 const prefix = (skipPrefixForVendors && chunk.name === 'vendor') ? '' : modulePrefix;
+                console.log(chunk.name, prefix);
                 chunk.forEachModule(function (module) {
-                    module.id = replaceModuleId(module, prefix, moduleVendors);
+                    module.id = replaceModuleId(module, prefix);
                 });
             });
         });

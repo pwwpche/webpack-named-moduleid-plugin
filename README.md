@@ -20,7 +20,7 @@ plugins: [
 ```
 ## Options:
 * **prefix**: Prefix added to the module ids. This should be a string
-      * **skip-prefix-for-vendors**: Force plugin not to add prefix for modules in a chunk named `vendor`. Default is `true`.
+* **skip-prefix-for-vendors**: Force plugin not to add prefix for modules in a chunk named `vendor`. Default is `true`.
 
 ## Description:
 This plugin uses Webpack `after-optimize-chunk-id` lifecycle hook, and looks into every module in each generated chunk.

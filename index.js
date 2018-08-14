@@ -12,6 +12,7 @@ function checksum (str) {
 function WebpackNameModuleId(options) {
     this._options = options || {
         prefix: '',
+        'skip-prefix-for-vendors': true,
     };
 }
 
@@ -28,33 +29,47 @@ function getVersionOfPackage(resourcePath) {
     return version;
 }
 
+function replaceModuleId(module, modulePrefix, moduleVendors) {
+    var resourceName = module.resource;
+    var replacedId = module.id;
+
+    if (resourceName && resourceName.indexOf('node_modules/') !== -1) {
+        replacedId = resourceName.substr(resourceName.lastIndexOf('node_modules/') + 'node_modules/'.length);
+        var checkSumStr = '';
+        try{
+            const file = fs.readFileSync(resourceName);
+            checkSumStr = checksum(file);
+        } catch (e) {}
+        replacedId += '_' + getVersionOfPackage(replacedId) + '_' + checkSumStr;
+    } else if (resourceName) {
+        if ( resourceName.indexOf('src/') !== -1) {
+            replacedId = resourceName.substr(resourceName.lastIndexOf('src/') + 'src/'.length);
+        } else if (resourceName.indexOf('app/') !== -1) {
+            replacedId = resourceName.substr(resourceName.lastIndexOf('app/') + 'app/'.length);
+        }
+    }
+
+    if (!replacedId.toString().startsWith(modulePrefix)) {
+        replacedId = modulePrefix + replacedId;
+    }
+
+    return replacedId;
+}
+
 WebpackNameModuleId.prototype.apply = function(compiler) {
-    modulePrefix = this._options.prefix;
+    var modulePrefix = this._options.prefix;
+    var moduleVendors = this._options.vendor;
+    var skipPrefixForVendors = this._options['skip-prefix-for-vendors']
     compiler.plugin("compilation", function(compilation) {
-        compilation.plugin("after-optimize-module-ids", function(modules) {
-            modules.forEach(function(module) {
-                var resourceName = module.resource;
-                if (resourceName) {
-                    if (resourceName.indexOf('node_modules/') !== -1) {
-                        module.id = resourceName.substr(resourceName.lastIndexOf('node_modules/') + 'node_modules/'.length);
-                        var checkSumStr = '';
-                        try{
-                            const file = fs.readFileSync(resourceName);
-                            checkSumStr = checksum(file);
-                        } catch (e) {}
-                        module.id += '_' + getVersionOfPackage(module.id) + '_' + checkSumStr;
-                        return ;
-                    } else if ( resourceName.indexOf('src/') !== -1) {
-                        module.id = resourceName.substr(resourceName.lastIndexOf('src/') + 'src/'.length);
-                    } else if (resourceName.indexOf('app/') !== -1) {
-                        module.id = resourceName.substr(resourceName.lastIndexOf('app/') + 'app/'.length);
-                    }
-                }
-                if (!module.id.toString().startsWith(modulePrefix)) {
-                    module.id = modulePrefix + module.id;
-                }
+        compilation.plugin("after-optimize-chunk-ids", function(chunks) {
+            chunks.forEach(function(chunk) {
+                const prefix = (skipPrefixForVendors && chunk.name === 'vendor') ? '' : modulePrefix;
+                chunk.forEachModule(function (module) {
+                    module.id = replaceModuleId(module, prefix, moduleVendors);
+                });
             });
         });
+
     });
 };
 

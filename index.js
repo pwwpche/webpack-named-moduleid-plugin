@@ -10,14 +10,17 @@ function WebpackNameModuleId(options) {
 }
 
 var packageDependencies = {};
-try {
-    packageDependencies = require('../../package-lock.json').dependencies;
-} catch (e) {
-    console.error(
-        '[WebpackNameModuleIdPlugin] Cannot find package-lock.json, skip adding package version to module id. \n' +
-        'Notice: Module version is added in module id by default. Missing version number may cause your build' +
-        'incompatible with other builds.'
-    );
+
+function updatePackageDependencies() {
+    try {
+        packageDependencies = require('../../package-lock.json').dependencies;
+    } catch (e) {
+        console.error(
+            '[WebpackNameModuleIdPlugin] Cannot find package-lock.json, skip adding package version to module id. \n' +
+            'Notice: Module version is added in module id by default. Missing version number may cause your build' +
+            'incompatible with other builds.'
+        );
+    }
 }
 
 function getVersionOfPackage(resourcePath) {
@@ -67,6 +70,7 @@ WebpackNameModuleId.prototype.apply = function (compiler) {
     var skipPrefixForVendors = this._options['skip-prefix-for-vendors'] || true;
     compiler.plugin('compilation', function (compilation) {
         compilation.plugin('after-optimize-chunk-ids', function (chunks) {
+            updatePackageDependencies();
             chunks.forEach(function (chunk) {
                 const prefix = (skipPrefixForVendors && chunk.name === 'vendor') ?
                     '' :

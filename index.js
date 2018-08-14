@@ -45,7 +45,7 @@ function replaceModuleId(module, modulePrefix) {
             const file = fs.readFileSync(resourceName);
             checkSumStr = checksum(file);
         } catch (e) {
-            console.error('Checksum failed for file:' + filename);
+            console.error('Checksum failed for file:' + file);
             console.error(e);
         }
         replacedId += '_' + getVersionOfPackage(replacedId) + '_' + checkSumStr;

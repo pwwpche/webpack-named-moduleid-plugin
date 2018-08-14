@@ -1,6 +1,6 @@
 {
   "name": "webpack-name-moduleid-plugin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Assign module name with module path and resource name.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "webpack",
     "plugin"
   ],
-  "author": "pwwpche",
+  "author": "cheliu@google.com",
   "license": "MIT",
   "repository": {
     "type": "git",

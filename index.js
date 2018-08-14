@@ -5,7 +5,6 @@ function checksum(str) {
     return crypto.createHash('md5').update(str, 'utf8').digest('hex')
 }
 
-
 function WebpackNameModuleId(options) {
     this._options = options;
 }
@@ -44,10 +43,7 @@ function replaceModuleId(module, modulePrefix) {
         try {
             const file = fs.readFileSync(resourceName);
             checkSumStr = checksum(file);
-        } catch (e) {
-            console.error('Checksum failed for file:' + file);
-            console.error(e);
-        }
+        } catch (e) {}
         replacedId += '_' + getVersionOfPackage(replacedId) + '_' + checkSumStr;
     } else if (resourceName) {
         if (resourceName.indexOf('src/') !== -1) {

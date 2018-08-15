@@ -1,6 +1,6 @@
 {
   "name": "webpack-name-moduleid-plugin",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Assign module name with module path and resource name.",
   "main": "index.js",
   "scripts": {

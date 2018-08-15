@@ -13,7 +13,8 @@ const WebpackNameModuleIdPlugin = require('webpack-name-moduleId-plugin');
 plugins: [
       new WebpackNameModuleIdPlugin({
             prefix: 'PROXY/',
-            "skip-prefix-for-vendors": true
+            "skip-prefix-for-vendors": true,
+            "hide-dependencies": true,
       }),
       /* ... */
 ]
@@ -21,6 +22,8 @@ plugins: [
 ## Options:
 * **prefix**: Prefix added to the module ids. This should be a string
 * **skip-prefix-for-vendors**: Force plugin not to add prefix for modules in a chunk named `vendor`. Default is `true`.
+* **hide-dependencies**: Encrypt the module id string with MD5 encryption. Ids of modules under `node_modules` will be
+  encrypted, but module ids of source files under `src` or `app` are not encrypted. 
 
 ## Description:
 This plugin uses Webpack `after-optimize-chunk-id` lifecycle hook, and looks into every module in each generated chunk.

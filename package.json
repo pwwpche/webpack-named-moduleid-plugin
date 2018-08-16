@@ -4,7 +4,7 @@
   "description": "Assign module name with module path and resource name.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine index.spec.js"
   },
   "keywords": [
     "webpack",
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/pwwpche/webpack-named-moduleid-plugin/issues"
   },
-  "homepage": "https://github.com/pwwpche/webpack-named-moduleid-plugin#readme"
+  "homepage": "https://github.com/pwwpche/webpack-named-moduleid-plugin#readme",
+  "devDependencies": {
+    "jasmine": "^3.2.0"
+  }
 }

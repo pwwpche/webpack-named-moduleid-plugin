@@ -1,19 +1,19 @@
 const crypto = require('crypto');
 const fs = require('fs');
 
-function getMd5Checksum(str) {
-    return crypto.createHash('md5').update(str, 'utf8').digest('hex')
-}
-
 function WebpackNameModuleId(options) {
     this._options = options || {};
 }
 
-let packageDependencies = {};
+WebpackNameModuleId.prototype.packageDependencies = {};
 
-function extractPackageLock() {
+WebpackNameModuleId.prototype.getMd5Checksum = function(str) {
+    return crypto.createHash('md5').update(str, 'utf8').digest('hex')
+}
+
+WebpackNameModuleId.prototype.extractPackageLock = function() {
     try {
-        packageDependencies = require('../../package-lock.json').dependencies;
+        this.packageDependencies = require('../../package-lock.json').dependencies;
     } catch (e) {
         console.error(
             '[WebpackNameModuleIdPlugin] Cannot find package-lock.json, skip adding package version to module id. \n' +
@@ -22,20 +22,19 @@ function extractPackageLock() {
     }
 }
 
-function getVersionOfPackage(resourcePath) {
+WebpackNameModuleId.prototype.getVersionOfPackage = function(resourcePath) {
     const resourcePathChunks = resourcePath.split('/');
     let version = '', aggretatedPackageName = '';
     for (let pathChunk of resourcePathChunks) {
         aggretatedPackageName += (aggretatedPackageName ? '/' : '') + pathChunk;
-        if (packageDependencies.hasOwnProperty(aggretatedPackageName)) {
-            version = packageDependencies[aggretatedPackageName].version;
+        if (this.packageDependencies.hasOwnProperty(aggretatedPackageName)) {
+            version = this.packageDependencies[aggretatedPackageName].version;
         }
     }
     return version;
 }
 
-function replaceModuleId(
-    webpackModule, chunkPrefix, defaultPrefix, hideDependencies) {
+WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPrefix, defaultPrefix, hideDependencies) {
     if (webpackModule.id && webpackModule.id.toString().startsWith(defaultPrefix)) {
         //Id is already replaced for this module.
         return webpackModule.id;
@@ -51,14 +50,14 @@ function replaceModuleId(
         var getMd5ChecksumStr = '';
         try {
             var resourceFile = fs.readFileSync(resourceLocation);
-            getMd5ChecksumStr = getMd5Checksum(resourceFile);
+            getMd5ChecksumStr = this.getMd5Checksum(resourceFile);
         } catch (e) {
         }
 
         replacedId +=
-            '_' + getVersionOfPackage(replacedId) + '_' + getMd5ChecksumStr;
+            '_' + this.getVersionOfPackage(replacedId) + '_' + getMd5ChecksumStr;
         if (hideDependencies) {
-            replacedId = getMd5Checksum(replacedId);
+            replacedId = this.getMd5Checksum(replacedId);
         }
     } else if (resourceLocation) {
         // Webpack modules under /src or /app
@@ -81,19 +80,19 @@ function replaceModuleId(
     return chunkPrefix + replacedId;
 }
 
-WebpackNameModuleId.prototype.apply = function (compiler) {
+WebpackNameModuleId.prototype.apply = function(compiler) {
     const modulePrefix = this._options['prefix'] || '';
     const skipPrefixForVendors = this._options['skip-prefix-for-vendors'] || true;
     const hideDependencies = this._options['hide-dependencies'] || true;
-    compiler.plugin('compilation', function (compilation) {
+    compiler.plugin('compilation', (compilation) => {
         compilation.plugin('after-optimize-chunk-ids', (chunks) => {
-            extractPackageLock();
+            this.extractPackageLock();
             chunks.forEach((chunk) => {
                 const chunkPrefix = (skipPrefixForVendors && chunk.name === 'vendor') ?
                     '' :
                     modulePrefix;
                 chunk.forEachModule((module) => {
-                    module.id = replaceModuleId(
+                    module.id = this.replaceModuleId(
                         module, chunkPrefix, modulePrefix, hideDependencies);
                 });
             });

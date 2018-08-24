@@ -38,9 +38,20 @@ describe("WebpackNameModuleIdPlugin - ", () => {
                 id: 222,
                 resource: 'src/shell/shell.file.js',
             };
-            let generatedId = plugin.replaceModuleId(testModule, 'prefix/', 'prefix/', false);
+            let generatedId = plugin.replaceModuleId(testModule, 'prefix/', 'prefix/', false, 'src/');
             expect(generatedId).toEqual('prefix/shell/shell.file.js');
-            generatedId = plugin.replaceModuleId(testModule, 'prefix/', 'prefix/', true);
+            generatedId = plugin.replaceModuleId(testModule, 'prefix/', 'prefix/', true, 'src/');
+            expect(generatedId).toEqual('prefix/shell/shell.file.js');
+        });
+
+        it('should generate correct id for modules under apps folder', () => {
+            const testModule = {
+                id: 222,
+                resource: '/root/src/app/Node_code/src/some_spa/src/app/shell/shell.file.js',
+            };
+            let generatedId = plugin.replaceModuleId(testModule, 'prefix/', 'prefix/', false, 'app/');
+            expect(generatedId).toEqual('prefix/shell/shell.file.js');
+            generatedId = plugin.replaceModuleId(testModule, 'prefix/', 'prefix/', true, 'app/');
             expect(generatedId).toEqual('prefix/shell/shell.file.js');
         });
 

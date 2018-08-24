@@ -8,7 +8,7 @@ function WebpackNameModuleId(options) {
 WebpackNameModuleId.prototype.packageDependencies = {};
 
 WebpackNameModuleId.prototype.getMd5Checksum = function(str) {
-    return crypto.createHash('md5').update(str, 'utf8').digest('hex')
+    return crypto.createHash('md5').update(str, 'utf8').digest('hex');
 }
 
 WebpackNameModuleId.prototype.extractPackageLock = function() {
@@ -34,7 +34,7 @@ WebpackNameModuleId.prototype.getVersionOfPackage = function(resourcePath) {
     return version;
 }
 
-WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPrefix, defaultPrefix, hideDependencies) {
+WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPrefix, defaultPrefix, hideDependencies, srcFolderPrefix) {
     if (webpackModule.id && webpackModule.id.toString().startsWith(defaultPrefix)) {
         //Id is already replaced for this module.
         return webpackModule.id;
@@ -60,13 +60,10 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
             replacedId = this.getMd5Checksum(replacedId);
         }
     } else if (resourceLocation) {
-        // Webpack modules under /src or /app
-        if (resourceLocation.indexOf('src/') !== -1) {
+        // Webpack modules under source folder
+        if (resourceLocation.indexOf(srcFolderPrefix) !== -1) {
             replacedId = resourceLocation.substr(
-                resourceLocation.lastIndexOf('src/') + 'src/'.length);
-        } else if (resourceLocation.indexOf('app/') !== -1) {
-            replacedId = resourceLocation.substr(
-                resourceLocation.lastIndexOf('app/') + 'app/'.length);
+                resourceLocation.lastIndexOf(srcFolderPrefix) + srcFolderPrefix.length);
         } else {
             // This path is unrecognized
             replacedId = resourceLocation;
@@ -84,6 +81,7 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
     const modulePrefix = this._options['prefix'] || '';
     const skipPrefixForVendors = this._options['skip-prefix-for-vendors'] || true;
     const hideDependencies = this._options['hide-dependencies'] || true;
+    const srcFolderPrefix = (this._options['source-folder-name'] || 'app') + '/';
     compiler.plugin('compilation', (compilation) => {
         compilation.plugin('after-optimize-chunk-ids', (chunks) => {
             this.extractPackageLock();
@@ -93,7 +91,7 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
                     modulePrefix;
                 chunk.forEachModule((module) => {
                     module.id = this.replaceModuleId(
-                        module, chunkPrefix, modulePrefix, hideDependencies);
+                        module, chunkPrefix, modulePrefix, hideDependencies, srcFolderPrefix);
                 });
             });
         });

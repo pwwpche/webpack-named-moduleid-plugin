@@ -82,12 +82,26 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
   return chunkPrefix + replacedId;
 }
 
+
+WebpackNameModuleId.prototype.extractOptions = function(options) {
+  const modulePrefix = options['prefix'] || '';
+  const skipPrefixForVendors = options['skip-prefix-for-vendors'] || true;
+  const hideDependencies = options['hide-dependencies'] || true;
+  const srcFolderPrefix = options['source-folder-name'] || 'app';
+  console.log('extract', __dirname);
+  const packageLock = options['package-lock'] || path.resolve(__dirname, './package-lock.json');
+  return {
+    modulePrefix: modulePrefix,
+    skipPrefixForVendors: skipPrefixForVendors,
+    hideDependencies: hideDependencies,
+    srcFolderPrefix: srcFolderPrefix,
+    packageLock: packageLock,
+  }
+}
+
 WebpackNameModuleId.prototype.apply = function(compiler) {
-  const modulePrefix = this._options['prefix'] || '';
-  const skipPrefixForVendors = this._options['skip-prefix-for-vendors'] || true;
-  const hideDependencies = this._options['hide-dependencies'] || true;
-  const srcFolderPrefix = (this._options['source-folder-name'] || 'app');
-  const packageLock = this._options['package-lock'] || path.resolve(__dirname, './package-lock.json');
+  const {modulePrefix, skipPrefixForVendors, hideDependencies, srcFolderPrefix, 
+    packageLock} = this.extractOptions(this._options);
   compiler.plugin('compilation', (compilation) => {
     compilation.plugin('after-optimize-chunk-ids', (chunks) => {
       this.extractPackageLock(packageLock);

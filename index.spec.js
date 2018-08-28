@@ -41,7 +41,7 @@ describe("WebpackNameModuleIdPlugin - ", () => {
             expect(generatedIdEncrypted).toEqual('prefix/stringChecksum');
         });
 
-        it('should generate correct id for modules under apps folder', () => {
+        it('should generate correct id for modules under source folder', () => {
             const testModule = {
                 id: 222,
                 resource: __dirname + '/src/app/shell/shell.file.js',
@@ -95,5 +95,11 @@ describe("WebpackNameModuleIdPlugin - ", () => {
             expect(generatedId).toEqual('@angular/apps/test.file.js_1.0_fileChecksum');
             expect(generatedIdEncrypted).toEqual('stringChecksum');
         });
+
+        it('should resolve package-lock path correctly', () => {
+            const generatedOptions = plugin.extractOptions({});
+            expect(generatedOptions.packageLock).toBeDefined();
+            expect(generatedOptions.packageLock).toEqual(path.resolve('./package-lock.json'));
+        })
     });
 });

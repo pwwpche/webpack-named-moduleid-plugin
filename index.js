@@ -88,8 +88,7 @@ WebpackNameModuleId.prototype.extractOptions = function(options) {
   const skipPrefixForVendors = options['skip-prefix-for-vendors'] || true;
   const hideDependencies = options['hide-dependencies'] || true;
   const srcFolderPrefix = options['source-folder-name'] || 'app';
-  console.log('extract', __dirname);
-  const packageLock = options['package-lock'] || path.resolve(__dirname, './package-lock.json');
+  const packageLock = options['package-lock'] || path.resolve('./package-lock.json');
   return {
     modulePrefix: modulePrefix,
     skipPrefixForVendors: skipPrefixForVendors,

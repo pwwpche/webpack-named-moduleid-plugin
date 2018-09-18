@@ -42,6 +42,10 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
   }
 
   const resourceLocation = webpackModule.resource;
+  let moduleIdentifier = webpackModule.libIdent ? webpackModule.libIdent({ context: this.context})
+      : '';
+  moduleIdentifier = hideDependencies ? this.getMd5Checksum(moduleIdentifier) : moduleIdentifier;
+
   let replacedId = '';
 
   if (resourceLocation && resourceLocation.indexOf('node_modules/') !== -1) {
@@ -74,11 +78,20 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
           'Did you set source-folder-name correctly?');
       replacedId = resourceLocation;
     }
+  } else if (moduleIdentifier) {
+    return defaultPrefix + moduleIdentifier;
   } else {
     // Webpack multi modules. It has no resource path, but has a integer as its
     // module.id. It should be enforced a prefix to avoid collision.
     return defaultPrefix + webpackModule.id.toString();
   }
+
+  // Assert some module have same path, but no modules have same module.libIdent()
+  if (replacedId && this.usedIds.has(replacedId)) {
+    replacedId += this.getMd5Checksum(moduleIdentifier);
+  }
+  this.usedIds.add(replacedId);
+
   return chunkPrefix + replacedId;
 }
 
@@ -99,11 +112,13 @@ WebpackNameModuleId.prototype.extractOptions = function(options) {
 }
 
 WebpackNameModuleId.prototype.apply = function(compiler) {
-  const {modulePrefix, skipPrefixForVendors, hideDependencies, srcFolderPrefix, 
+  this.context = compiler.context;
+  const {modulePrefix, skipPrefixForVendors, hideDependencies, srcFolderPrefix,
     packageLock} = this.extractOptions(this._options);
   compiler.plugin('compilation', (compilation) => {
     compilation.plugin('after-optimize-chunk-ids', (chunks) => {
       this.extractPackageLock(packageLock);
+      this.usedIds = new Set();
       chunks.forEach((chunk) => {
         const chunkPrefix = (skipPrefixForVendors && chunk.name === 'vendor') ?
             '' :

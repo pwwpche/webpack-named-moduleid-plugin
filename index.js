@@ -42,10 +42,11 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
   }
 
   const resourceLocation = webpackModule.resource;
-  let moduleIdentifier = webpackModule.libIdent ? webpackModule.libIdent({ context: this.context})
-      : '';
-  moduleIdentifier = hideDependencies ? this.getMd5Checksum(moduleIdentifier) : moduleIdentifier;
-
+  let moduleIdentifier = '';
+  if (webpackModule.libIdent) {
+    moduleIdentifier = hideDependencies ? this.getMd5Checksum(moduleIdentifier) : '';
+  }
+  
   let replacedId = '';
 
   if (resourceLocation && resourceLocation.indexOf('node_modules/') !== -1) {
@@ -88,7 +89,7 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
 
   // Assert some module have same path, but no modules have same module.libIdent()
   if (replacedId && this.usedIds.has(replacedId)) {
-    replacedId += this.getMd5Checksum(moduleIdentifier);
+    replacedId += moduleIdentifier;
   }
   this.usedIds.add(replacedId);
 

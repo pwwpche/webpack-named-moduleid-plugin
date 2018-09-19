@@ -44,6 +44,9 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
   const resourceLocation = webpackModule.resource;
   let moduleIdentifier = '';
   if (webpackModule.libIdent) {
+    moduleIdentifier = webpackModule.libIdent({
+      context: this.context,
+    });
     moduleIdentifier = hideDependencies ? this.getMd5Checksum(moduleIdentifier) : '';
   }
   

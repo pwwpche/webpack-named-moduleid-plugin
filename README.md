@@ -41,12 +41,14 @@ After bundling completes, in the build bundles, you will notice module id change
 
 Modules in bundles now have a module id with following format, where
 ```js
-module.id = 'PREFIX' + 'resource_name' + '_' + 'module_version' + '_' + 'resource_hash'
+module.id = 'PREFIX' + 'resource_name' + '_' + 'module_version' + '_' + 'resource_hash' [+ 'libIdent_hash']
 ```
 * __PREFIX__: Prefix defined in plugin options, default empty. Eg. `PROXIES/`
 * __resource_name__: Path and filename of the dependency, Eg. `@angular/animations/@angular/animations.es5.js`
 * __module_version__: Version number of this module, this is read from `package-lock.json`. Eg. `4.3.4`
 * __resouce_hash__: Md5 hash of the resouce file. Eg. `b4ce8ea53a8f2acf5589246494e80181`
+* __libIdent_hash__: Md5 hash of the resource module identifier. Eg. `b4ce8ea53a8f2acf5589246494e80181`. This will only be added
+  when there are modules with same resouce name, adding this avoids module id conflict.
 
 Modules placed in `source-folder-name` are considered source files. They will not be appended with hashcode or version number
 Modules under `node_modules` folder are considered libraries. They will have `module_version` and `resource_hash` to prevent redundant loadings.

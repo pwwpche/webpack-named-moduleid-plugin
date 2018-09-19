@@ -47,7 +47,7 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
     moduleIdentifier = webpackModule.libIdent({
       context: this.context,
     });
-    moduleIdentifier = hideDependencies ? this.getMd5Checksum(moduleIdentifier) : '';
+    moduleIdentifier = hideDependencies ? this.getMd5Checksum(moduleIdentifier) : moduleIdentifier;
   }
   
   let replacedId = '';
@@ -92,7 +92,7 @@ WebpackNameModuleId.prototype.replaceModuleId = function(webpackModule, chunkPre
 
   // Assert some module have same path, but no modules have same module.libIdent()
   if (replacedId && this.usedIds.has(replacedId)) {
-    replacedId += moduleIdentifier;
+    replacedId += '_' + moduleIdentifier;
   }
   this.usedIds.add(replacedId);
 

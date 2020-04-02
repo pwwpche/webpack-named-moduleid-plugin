@@ -127,7 +127,7 @@ WebpackNameModuleId.prototype.apply = function(compiler) {
         const chunkPrefix = (skipPrefixForVendors && chunk.name === 'vendor') ?
             '' :
             modulePrefix;
-        chunk.forEachModule((module) => {
+        chunk.modules.forEach((module) => {
           module.id = this.replaceModuleId(
               module, chunkPrefix, modulePrefix, hideDependencies, srcFolderPrefix);
         });
